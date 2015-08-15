@@ -1,9 +1,3 @@
--- require('Inspired')
-
--- Config = scriptConfig("AutoLvlUp", "LvlUp.lua")
--- Config.addParam("lvlauto", "Auto Lvl Up Skill", SCRIPT_PARAM_ONOFF, true)
--- Config.addParam("lvlautoulti", "Auto Lvl Up Ulti", SCRIPT_PARAM_ONOFF, true)
-
 PrintChat("Auto lvl Up Loaded")
 
 TableSkill = {}
@@ -161,18 +155,22 @@ function lvlup(x)
 	LevelSpell(TableSkill[GetObjectName(myHero)][x])
 end
 
+		AutoLvlUpConfig = scriptConfig("AutoLvlUp", "LvlUp.lua")
+		AutoLvlUpConfig.addParam("lvlauto", "Auto Lvl Up Skill", SCRIPT_PARAM_ONOFF, false)
+		AutoLvlUpConfig.addParam("lvlautoulti", "Auto Lvl Up Ulti", SCRIPT_PARAM_ONOFF, true)
+
 
 OnLoop(function(myHero)
 
--- if TableSkill[GetObjectName(myHero)] == nil and Config.lvlautoulti or not config.lvlauto then
-if TableSkill[GetObjectName(myHero)] == nil then
+
+if TableSkill[GetObjectName(myHero)] == nil and AutoLvlUpConfig.lvlautoulti or not AutoLvlUpConfig.lvlauto then
 	if GetLevel(myHero) == 6 or GetLevel(myHero) == 11 or GetLevel(myHero) == 16 then
 		LevelSpell(_R)
 	end
 else
 
     
-	-- if Config.lvlauto then
+	 if AutoLvlUpConfig.lvlauto then
 	
 		switch(GetLevel(myHero)):caseof{
 			[1]   = function (x) lvlup(x) end,
@@ -197,7 +195,7 @@ else
 			missing = function (x) PrintChat("error") end,
 		}
 	
-	-- end
+	 end
 	
 end
 
