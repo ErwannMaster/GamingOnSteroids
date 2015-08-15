@@ -346,7 +346,7 @@ function GetTarget(range, damageType)
 if PriorityConfig.priority then
 	for _, k in pairs(GetEnemyHeroes()) do
 			if k and ValidTarget(k, range) and loadstring("return PriorityConfig." .. GetObjectName(k))() then
-			PrintChat(GetObjectName(k))
+			-- PrintChat(GetObjectName(k))
 			return k
 		end
 	end
