@@ -43,14 +43,8 @@ function DelayAction(func, delay, args)
     end
 end
 
-	
-
 OnLoop(function(myHero)
     DrawMenu()
-
-		
-	
-	
     if Ignite and InspiredConfig.Ignite then AutoIgnite() end
 end)
 
@@ -72,7 +66,6 @@ do
     objectManager.objects[GetNetworkID(object)] = object
   end)
   OnLoop(function(myHero)
-  -- PrintChat("ALO")
     objectManager.maxObjects = 0
     for _, obj in pairs(objectManager.objects) do
       objectManager.maxObjects = objectManager.maxObjects + 1
@@ -103,9 +96,6 @@ do
       end
     end
   end)
-  
-  
-  
   DelayAction(function() EmptyObjManager() end, 60000)
 end
 
@@ -189,7 +179,7 @@ end
 function GetAllMinions(team)
     local result = {}
     for _,k in pairs(objectManager.minions) do
-        if k and not IsDead(k) then
+        if k and not IsDead(k) and GetCurrentHP(k) < 100000 and GetObjectName(k):find("_") then
             if not team or GetTeam(k) == team then
                 result[_] = k
             end
@@ -202,36 +192,39 @@ end
 
 function ClosestMinion(pos, team)
     local minion = nil
-    for k,v in pairs(GetAllMinions()) do 
-        local objTeam = GetTeam(v)
-        if not minion and v and objTeam == team then minion = v end
-        if minion and v and objTeam == team and GetDistanceSqr(GetOrigin(minion),pos) > GetDistanceSqr(GetOrigin(v),pos) then
-            minion = v
+    for k,v in pairs(GetAllMinions(team)) do 
+      if v then
+        if not minion then minion = v end
+        if minion and GetDistanceSqr(GetOrigin(minion),pos) > GetDistanceSqr(GetOrigin(v),pos) then
+          minion = v
         end
+      end
     end
     return minion
 end
 
 function GetLowestMinion(pos, range, team)
     local minion = nil
-    for k,v in pairs(GetAllMinions()) do 
-        local objTeam = GetTeam(v)
-        if not minion and v and objTeam == team and GetDistanceSqr(GetOrigin(v),pos) < range*range then minion = v end
-        if minion and v and objTeam == team and GetDistanceSqr(GetOrigin(v),pos) < range*range and GetCurrentHP(v) < GetCurrentHP(minion) then
+    for k,v in pairs(GetAllMinions(team)) do 
+      if v then
+        if not minion and GetDistanceSqr(GetOrigin(v),pos) < range*range then minion = v end
+        if minion and GetDistanceSqr(GetOrigin(v),pos) < range*range and GetCurrentHP(v) < GetCurrentHP(minion) then
             minion = v
         end
+      end
     end
     return minion
 end
 
 function GetHighestMinion(pos, range, team)
     local minion = nil
-    for k,v in pairs(GetAllMinions()) do 
-        local objTeam = GetTeam(v)
-        if not minion and v and objTeam == team and GetDistanceSqr(GetOrigin(v),pos) < range*range then minion = v end
-        if minion and v and objTeam == team and GetDistanceSqr(GetOrigin(v),pos) < range*range and GetCurrentHP(v) > GetCurrentHP(minion) then
-            minion = v
+    for k,v in pairs(GetAllMinions(team)) do 
+      if v then
+        if not minion and GetDistanceSqr(GetOrigin(v),pos) < range*range then minion = v end
+        if minion and GetDistanceSqr(GetOrigin(v),pos) < range*range and GetCurrentHP(v) > GetCurrentHP(minion) then
+          minion = v
         end
+      end
     end
     return minion
 end
@@ -326,7 +319,6 @@ function CalcDamage(source, target, addmg, apdmg)
     return (GotBuff(source,"exhausted")  > 0 and 0.4 or 1) * math.floor(ADDmg*(1-ArmorPercent))+math.floor(APDmg*(1-MagicArmorPercent))
 end
 
-
 -- ADD PRIORITY MENU-------------------
 local priorityMenuDraw = 0
 OnLoop(function(myHero)
@@ -340,7 +332,7 @@ OnLoop(function(myHero)
 	end
 end)
 ----------------------------
-	
+
 function GetTarget(range, damageType)	
 
 if PriorityConfig.priority then
@@ -545,10 +537,6 @@ if Ignite then
   InspiredConfig = scriptConfig("Inspired", "Inspired.lua")
   InspiredConfig.addParam("Ignite", "Auto Ignite", SCRIPT_PARAM_ONOFF, true)
 end
-
-
-
-
 
 local toPrint, toPrintCol = {}, {}
 function print(str, time, col)
